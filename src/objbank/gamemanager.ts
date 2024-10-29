@@ -56,7 +56,7 @@ async function retrieveAllDBPlayers() {
 
 async function getThisPlayer(userId, userName) {
   //console.log(`getThisPlayer: uid:${userId} - userName: ${userName}}`);
-  var p = new playerObj.Player(userId, userName, 100, 0, 'none', 'Grasslands', 'Foothills', 0, pgdata.map)
+  var p = new playerObj(userId, userName, 100, 0, 'none', 'Grasslands', 'Foothills', 0, pgdata.map)
   db.get('SELECT pdata FROM playerData WHERE userId = ?', [userId], (err, dbplayer) => {
     if (err) {
       console.log(`getThisPlayer DATABASE Error: ${err}`)
@@ -169,9 +169,9 @@ async function runGame(i, pl) {
 }
 
 async function buildEmbed(pl, user) {
-  const place = location.map[pl.area][pl.location].description
-  const imgu = new AttachmentBuilder(location.map[pl.area][pl.location].imagepath, {
-    name: location.map[pl.area][pl.location].filename
+  const place = location[pl.area][pl.location].description
+  const imgu = new AttachmentBuilder(location[pl.area][pl.location].imagepath, {
+    name: location[pl.area][pl.location].filename
   })
   const embed = new EmbedBuilder()
     .setTitle(`Area: ${pl.area} - Location: ${pl.location}`)
@@ -191,8 +191,8 @@ async function buildEmbed(pl, user) {
 }
 
 async function buildButtons(pl) {
-  directionArray = pl.map[pl.area][pl.location].directions
-  buttonArray = []
+  const directionArray = pl.map[pl.area][pl.location].directions
+  const buttonArray = []
   for (const d in directionArray) {
     const buttonx = new ButtonBuilder()
       .setLabel(`${directionArray[d]}`)

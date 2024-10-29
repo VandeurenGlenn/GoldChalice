@@ -108,7 +108,7 @@ export const execute = async (interaction) => {
     .setColor(0xffff00)
 
   //Build button array
-  buttonArray = []
+  const buttonArray = []
   const row = new ActionRowBuilder()
   for (const answer in wrongAnswers) {
     const buttonx = new ButtonBuilder()
