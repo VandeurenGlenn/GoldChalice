@@ -60,7 +60,6 @@ async function getThisPlayer(userId, userName)
 {
   //console.log(`getThisPlayer: uid:${userId} - userName: ${userName}}`);
   var p = new playerObj.Player(userId, userName, 100, 0, 'none', 'Grasslands', 'Foothills', 0, pgdata.map);
-  let dbp;
   db.get('SELECT pdata FROM playerData WHERE userId = ?', [userId], (err, dbplayer) =>
   {
     if (err) {
@@ -73,18 +72,18 @@ async function getThisPlayer(userId, userName)
       console.log(`getThisPlayer dbplayer === undefined: ${userName} - ${userId} NOT found. New Player Created. Plist len: ${plist.length}`);
     } else {
       // Player found      
-      dbp = JSON.parse(dbplayer.pdata);
-      plist.push(dbp);
-      console.log(`getThisPlayer else: ${userName} - ${userId} FOUND. Location: ${dbp.location} PlayerId: ${dbp.id} Plist len: ${plist.length}`);      
+      p = JSON.parse(dbplayer.pdata);
+      plist.push(p); // This does not seem to push anything ARGGGHH
+      console.log(`getThisPlayer else: ${userName} - ${userId} FOUND. Location: ${p.location} PlayerId: ${p.id} Plist len: ${plist.length}`);      
     }
   });
   var pl = findInPlist(userId);
   if (pl == undefined)
   {
-    plist.push(dbp);
+    plist.push(p); // This is hoping that p was pushed to plist when db was read... but hmm
     console.log(`getThisPlayer: pl undefined - player must exist in DB - pushed into Plist len: ${plist.length}`);
   }
-  return dbp;
+  return p;
 }
 
 async function findInPlist(id)
@@ -99,7 +98,7 @@ async function findInPlist(id)
   }
 }
 
-async function runGame(i,pl)
+async function runGame(i, pl)
 {
   //console.log("here");
   //var pl = await findInPlist(i.user.id);
