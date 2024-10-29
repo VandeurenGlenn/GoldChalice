@@ -9,7 +9,7 @@ const client = new Client({ intents: [GatewayIntentBits.Guilds] })
 
 client.commands = new Collection()
 
-const foldersPath = './commands'
+const foldersPath = './exports/commands'
 const commandFolders = fs.readdirSync(foldersPath)
 
 for (const folder of commandFolders) {
