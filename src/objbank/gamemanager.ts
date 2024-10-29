@@ -42,47 +42,48 @@ function updateDBPlayer(userId, player) {
 }
 
 async function retrieveAllDBPlayers() {
-  db.all(`SELECT * FROM playerData`, (err, rows) => {
-    if (err) {
-      console.error(err)
-    } else {
-      rows.forEach((row) => {
-        const deserializedObject = JSON.parse(row.pdata)
-        console.log(deserializedObject) // { name: 'John', age: 30 }
-      })
-    }
+  return new Promise((resolve, reject) => {
+    db.all(`SELECT * FROM playerData`, (err, rows) => {
+      if (err) {
+        reject(err)
+      } else {
+        rows.forEach((row) => {
+          const deserializedObject = JSON.parse(row.pdata)
+          console.log(deserializedObject) // { name: 'John', age: 30 }
+          resolve(deserializedObject)
+        })
+      }
+    })
   })
 }
 
 async function getThisPlayer(userId, userName) {
-  //console.log(`getThisPlayer: uid:${userId} - userName: ${userName}}`);
-  var p = new playerObj(userId, userName, 100, 0, 'none', 'Grasslands', 'Foothills', 0, pgdata.map)
-  db.get('SELECT pdata FROM playerData WHERE userId = ?', [userId], (err, dbplayer) => {
-    if (err) {
-      console.log(`getThisPlayer DATABASE Error: ${err}`)
-    } else if (dbplayer === undefined) {
-      // Player not found in database, create new
-      //p = new playerObj.Player(userId, userName, 100, 0, 'none', 'Grasslands', 'Foothills', 0, location.map);
-      //updateDBPlayer(userId, p);
-      //plist.push(p);
-      console.log(
-        `getThisPlayer dbplayer === undefined: ${userName} - ${userId} NOT found. New Player Created. Plist len: ${plist.length}`
-      )
-    } else {
-      // Player found
-      p = JSON.parse(dbplayer.pdata)
-      plist.push(p) // This does not seem to push anything ARGGGHH
-      console.log(
-        `getThisPlayer else: ${userName} - ${userId} FOUND. Location: ${p.location} PlayerId: ${p.id} Plist len: ${plist.length}`
-      )
-    }
+  return new Promise((resolve, reject) => {
+    //console.log(`getThisPlayer: uid:${userId} - userName: ${userName}}`);
+    var p = new playerObj(userId, userName, 100, 0, 'none', 'Grasslands', 'Foothills', 0, pgdata.map)
+    db.get('SELECT pdata FROM playerData WHERE userId = ?', [userId], (err, dbplayer) => {
+      if (err) {
+        console.log(`getThisPlayer DATABASE Error: ${err}`)
+      } else if (dbplayer === undefined) {
+        // Player not found in database, create new
+        //p = new playerObj.Player(userId, userName, 100, 0, 'none', 'Grasslands', 'Foothills', 0, location.map);
+        //updateDBPlayer(userId, p);
+        //plist.push(p);
+        console.log(
+          `getThisPlayer dbplayer === undefined: ${userName} - ${userId} NOT found. New Player Created. Plist len: ${plist.length}`
+        )
+      } else {
+        // Player found
+        p = JSON.parse(dbplayer.pdata)
+        plist.push(p) // This does not seem to push anything ARGGGHH
+        console.log(
+          `getThisPlayer else: ${userName} - ${userId} FOUND. Location: ${p.location} PlayerId: ${p.id} Plist len: ${plist.length}`
+        )
+
+        resolve(p)
+      }
+    })
   })
-  var pl = findInPlist(userId)
-  if (pl == undefined) {
-    plist.push(p) // This is hoping that p was pushed to plist when db was read... but hmm
-    console.log(`getThisPlayer: pl undefined - player must exist in DB - pushed into Plist len: ${plist.length}`)
-  }
-  return p
 }
 
 async function findInPlist(id) {
